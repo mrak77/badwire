@@ -1,0 +1,14 @@
+#!/bin/bash
+set -e
+
+# Обновление кеша иконок
+if [ -x /usr/bin/gtk-update-icon-cache ]; then
+    gtk-update-icon-cache -f /usr/share/icons/hicolor || true
+fi
+
+# Обновление desktop-базы
+if [ -x /usr/bin/update-desktop-database ]; then
+    update-desktop-database /usr/share/applications || true
+fi
+
+echo "BadWire installed. Run with: badwire"

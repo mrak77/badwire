@@ -1,0 +1,13 @@
+# Rust result
+/target/
+
+# Deb packages
+/builds/
+
+# IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+.DS_Store

@@ -1,0 +1,14 @@
+#!/bin/bash
+set -euo pipefail
+
+# Разрешённые символы: буквы, цифры, точка, подчёркивание, дефис, проценты (для netem)
+ALLOWED_PATTERN='^[a-zA-Z0-9._%-]+$'
+
+for arg in "$@"; do
+    if [[ ! "$arg" =~ $ALLOWED_PATTERN ]]; then
+        echo "Rejected invalid argument: $arg" >&2
+        exit 1
+    fi
+done
+
+exec /usr/bin/tc "$@"

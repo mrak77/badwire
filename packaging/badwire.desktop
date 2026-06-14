@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=BadWire
+Comment=Network Emulator for Debugging
+Exec=badwire
+Icon=badwire
+Terminal=false
+Type=Application
+Categories=Network;System;

@@ -1,0 +1,11 @@
+Package: BadWire
+Version: 1.0.0
+Section: net
+Priority: optional
+Architecture: amd64
+Depends: libgtk-3-0, iproute2, pkexec
+Maintainer: pb.mrak@yandex.ru
+Description: Network emulation tool for debugging
+ BadWire provides an easy-to-use GUI for tc-netem,
+ allowing you to simulate network conditions like delay,
+ packet loss, jitter, and more.
