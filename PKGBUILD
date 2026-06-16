@@ -10,7 +10,7 @@ options=(!debug)
 depends=('gtk3' 'iproute2' 'polkit')
 makedepends=('cargo')
 source=("$pkgname-$pkgver.tar.gz::https://github.com/mrak77/badwire/archive/refs/tags/v$pkgver.tar.gz")
-sha256sums=('438c7d09be8f0e0959a364e6c1bed960c3c38a25d71586d8aeb174d4ff2ba3a3')
+sha256sums=('1eebc65226e937a53c8a3b03bd7d8beb6adc574bbe1e1a062c35e8de71f088b3')
 
 build() {
     cd "$srcdir/$pkgname-$pkgver"
