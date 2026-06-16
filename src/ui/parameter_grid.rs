@@ -1,7 +1,7 @@
-use gtk::prelude::*;
-use gtk::{Entry, Grid, Label, Align, Box};
 use crate::helpers;
 use crate::parameter_entries::ParsedParams;
+use gtk::prelude::*;
+use gtk::{Align, Box, Entry, Grid, Label};
 
 pub struct ParameterEntries {
     pub delay: Entry,

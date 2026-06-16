@@ -57,7 +57,7 @@ else
 pkgname=$BIN_NAME
 pkgver=$VERSION
 pkgrel=1
-pkgdesc="Network impairment tool using tc-netem"
+pkgdesc="BadWire is a simple GUI for simulating network problems with tc-netem"
 arch=('x86_64')
 url="https://github.com/mrak77/$BIN_NAME"
 license=('GPL-3.0')
@@ -93,4 +93,3 @@ echo "Source archive: $DIST_DIR/$ARCHIVE_FILE"
 echo "Deb package:    $DIST_DIR/$DEB_FILE (if built)"
 echo "PKGBUILD:       $PKGBUILD_FILE (updated with SHA256)"
 echo ""
-echo "For AUR submission, upload $ARCHIVE_FILE to GitHub release and update PKGBUILD source URL."

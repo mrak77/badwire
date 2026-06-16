@@ -1,13 +1,13 @@
-use gtk::prelude::*;
-use gtk::{ComboBoxText, Label, Box, Align};
 use crate::helpers;
+use gtk::prelude::*;
+use gtk::{Align, Box, ComboBoxText, Label};
 
 pub fn build_interface_selector(parent: &Box) -> ComboBoxText {
     let label = Label::new(Some("Network Interface:"));
     label.set_halign(Align::Start);
     label.set_xalign(0.0);
     let combo = ComboBoxText::new();
-    let interfaces = helpers::get_interfaces();
+    let interfaces = helpers::get_network_interfaces();
     for iface in &interfaces {
         combo.append_text(iface);
     }

@@ -1,6 +1,6 @@
-use gtk::prelude::*;
-use gtk::{DrawingArea, Label, Orientation, Box, Align};
 use crate::state::AppState;
+use gtk::prelude::*;
+use gtk::{Align, Box, DrawingArea, Label, Orientation};
 
 pub fn build_status_bar(parent: &Box, state: &AppState) -> (DrawingArea, Label, Label) {
     let status_box = Box::new(Orientation::Horizontal, 8);

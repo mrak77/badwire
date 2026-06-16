@@ -1,6 +1,6 @@
-use thiserror::Error;
-use crate::tc::TcError;
 use crate::presets::PresetsError;
+use crate::tc::TcError;
+use thiserror::Error;
 
 #[derive(Error, Debug)]
 pub enum AppError {

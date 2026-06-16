@@ -1,4 +1,3 @@
-/// Представляет введённые пользователем значения без единиц измерения.
 #[derive(Debug, Clone, Default)]
 pub struct ParsedParams {
     pub delay: String,

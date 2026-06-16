@@ -1,8 +1,11 @@
-use gtk::prelude::*;
-use gtk::{Button, ComboBoxText, Label, Orientation, Box, Align};
 use crate::state::AppState;
+use gtk::prelude::*;
+use gtk::{Align, Box, Button, ComboBoxText, Label, Orientation};
 
-pub fn build_preset_controls(parent: &Box, state: &AppState) -> (ComboBoxText, Button, Button, Button) {
+pub fn build_preset_controls(
+    parent: &Box,
+    state: &AppState,
+) -> (ComboBoxText, Button, Button, Button) {
     let presets_box = Box::new(Orientation::Horizontal, 8);
     let preset_label = Label::new(Some("Preset:"));
     preset_label.set_halign(Align::Start);

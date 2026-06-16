@@ -1,11 +1,11 @@
 use serde::{Deserialize, Serialize};
 use std::fs;
-use std::io;
-use std::path::PathBuf;
-use thiserror::Error;
 use std::fs::Permissions;
+use std::io;
 #[cfg(unix)]
 use std::os::unix::fs::PermissionsExt;
+use std::path::PathBuf;
+use thiserror::Error;
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Preset {
@@ -41,102 +41,33 @@ pub enum PresetsError {
 pub fn default_presets() -> Vec<Preset> {
     vec![
         Preset {
-            name: "2G (GPRS)".into(),
-            delay: "500ms".into(),
-            jitter: "100ms".into(),
-            loss: "5%".into(),
-            loss_corr: "0%".into(),
-            reorder: String::new(),
-            reorder_corr: String::new(),
-            corrupt: String::new(),
-            corrupt_corr: String::new(),
-            duplicate: String::new(),
-            duplicate_corr: String::new(),
-            user_defined: false,
-        },
-        Preset {
-            name: "3G".into(),
-            delay: "100ms".into(),
-            jitter: "20ms".into(),
-            loss: "1%".into(),
-            loss_corr: "0%".into(),
-            reorder: String::new(),
-            reorder_corr: String::new(),
-            corrupt: String::new(),
-            corrupt_corr: String::new(),
-            duplicate: String::new(),
-            duplicate_corr: String::new(),
-            user_defined: false,
-        },
-        Preset {
-            name: "4G".into(),
-            delay: "20ms".into(),
-            jitter: "5ms".into(),
-            loss: "0.1%".into(),
-            loss_corr: "0%".into(),
-            reorder: String::new(),
-            reorder_corr: String::new(),
-            corrupt: String::new(),
-            corrupt_corr: String::new(),
-            duplicate: String::new(),
-            duplicate_corr: String::new(),
-            user_defined: false,
-        },
-        Preset {
-            name: "WiFi".into(),
+            name: "Wi-Fi".into(),
             delay: "2ms".into(),
             jitter: "1ms".into(),
-            loss: "0%".into(),
-            loss_corr: "0%".into(),
-            reorder: String::new(),
-            reorder_corr: String::new(),
-            corrupt: String::new(),
-            corrupt_corr: String::new(),
-            duplicate: String::new(),
-            duplicate_corr: String::new(),
-            user_defined: false,
+            ..Default::default()
         },
         Preset {
-            name: "Bad Network".into(),
-            delay: "250ms".into(),
+            name: "Mobile Network".into(),
+            delay: "100ms".into(),
+            jitter: "20ms".into(),
+            loss: "5%".into(),
+            corrupt: "1%".into(),
+            duplicate: "1%".into(),
+            ..Default::default()
+        },
+        Preset {
+            name: "Bad Connection".into(),
+            delay: "300ms".into(),
             jitter: "50ms".into(),
-            loss: "10%".into(),
+            loss: "25%".into(),
             loss_corr: "25%".into(),
-            reorder: String::new(),
-            reorder_corr: String::new(),
-            corrupt: String::new(),
-            corrupt_corr: String::new(),
-            duplicate: String::new(),
-            duplicate_corr: String::new(),
-            user_defined: false,
-        },
-        Preset {
-            name: "High Latency (Satellite)".into(),
-            delay: "600ms".into(),
-            jitter: "50ms".into(),
-            loss: "1%".into(),
-            loss_corr: "0%".into(),
-            reorder: String::new(),
-            reorder_corr: String::new(),
-            corrupt: String::new(),
-            corrupt_corr: String::new(),
-            duplicate: String::new(),
-            duplicate_corr: String::new(),
-            user_defined: false,
+            ..Default::default()
         },
         Preset {
             name: "Packet Loss 100%".into(),
             delay: "0ms".into(),
-            jitter: "0ms".into(),
             loss: "100%".into(),
-            loss_corr: "0%".into(),
-            reorder: String::new(),
-            reorder_corr: String::new(),
-            corrupt: String::new(),
-            corrupt_corr: String::new(),
-            duplicate: String::new(),
-            duplicate_corr: String::new(),
-            user_defined: false,
+            ..Default::default()
         },
     ]
 }
@@ -182,17 +113,36 @@ pub fn save_presets(presets: &[Preset]) -> Result<(), PresetsError> {
     let path = presets_path()?;
     if let Some(parent) = path.parent() {
         fs::create_dir_all(parent)?;
-        // Права на директорию тоже 700
         #[cfg(unix)]
         fs::set_permissions(parent, Permissions::from_mode(0o700))?;
     }
-    let file = PresetsFile { presets: presets.to_vec() };
+    let file = PresetsFile {
+        presets: presets.to_vec(),
+    };
     let data = serde_json::to_string_pretty(&file)?;
     fs::write(&path, data)?;
-    // Устанавливаем права 600
     #[cfg(unix)]
     fs::set_permissions(&path, Permissions::from_mode(0o600))?;
     Ok(())
+}
+
+impl Default for Preset {
+    fn default() -> Self {
+        Self {
+            name: String::new(),
+            delay: String::new(),
+            jitter: String::new(),
+            loss: String::new(),
+            loss_corr: String::new(),
+            reorder: String::new(),
+            reorder_corr: String::new(),
+            corrupt: String::new(),
+            corrupt_corr: String::new(),
+            duplicate: String::new(),
+            duplicate_corr: String::new(),
+            user_defined: false,
+        }
+    }
 }
 
 #[cfg(test)]
@@ -202,31 +152,31 @@ mod tests {
     #[test]
     fn test_default_presets_count() {
         let defaults = default_presets();
-        assert_eq!(defaults.len(), 7);
+        assert_eq!(defaults.len(), 4);
         assert!(defaults.iter().all(|p| !p.user_defined));
     }
 
     #[test]
-    fn test_presets_serialization_roundtrip() {
+    fn test_presets_serialization_roundup() {
         let mut presets = default_presets();
         presets.push(Preset {
             name: "Custom".into(),
-                     delay: "300ms".into(),
-                     jitter: "50ms".into(),
-                     loss: "0%".into(),
-                     loss_corr: "0%".into(),
-                     reorder: "".into(),
-                     reorder_corr: "".into(),
-                     corrupt: "".into(),
-                     corrupt_corr: "".into(),
-                     duplicate: "".into(),
-                     duplicate_corr: "".into(),
-                     user_defined: true,
+            delay: "300ms".into(),
+            jitter: "50ms".into(),
+            loss: "0%".into(),
+            loss_corr: "0%".into(),
+            reorder: "".into(),
+            reorder_corr: "".into(),
+            corrupt: "".into(),
+            corrupt_corr: "".into(),
+            duplicate: "".into(),
+            duplicate_corr: "".into(),
+            user_defined: true,
         });
 
         let json = serde_json::to_value(&presets).unwrap();
         let deserialized: Vec<Preset> = serde_json::from_value(json).unwrap();
-        assert_eq!(deserialized.len(), 8);
-        assert_eq!(deserialized[7].name, "Custom");
+        assert_eq!(deserialized.len(), 5);
+        assert_eq!(deserialized[4].name, "Custom");
     }
 }

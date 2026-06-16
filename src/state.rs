@@ -1,5 +1,5 @@
-use crate::presets;
 use crate::error::AppError;
+use crate::presets;
 use std::cell::RefCell;
 use std::rc::Rc;
 
@@ -17,13 +17,11 @@ impl AppState {
     pub fn new() -> Self {
         AppState(Rc::new(RefCell::new(StateInner {
             presets: presets::load_presets(),
-                                      active: false,
-                                      current_config: String::new(),
-                                      selected_iface: "lo".into(),
+            active: false,
+            current_config: String::new(),
+            selected_iface: "lo".into(),
         })))
     }
-
-    // --- Методы чтения / записи полей ---
 
     pub fn is_active(&self) -> bool {
         self.0.borrow().active
@@ -45,19 +43,22 @@ impl AppState {
         self.0.borrow_mut().selected_iface = iface.to_string();
     }
 
-    // --- Методы для работы с пресетами ---
-
     pub fn get_presets(&self) -> Vec<presets::Preset> {
         self.0.borrow().presets.clone()
     }
 
     pub fn find_preset(&self, name: &str) -> Option<presets::Preset> {
-        self.0.borrow().presets.iter().find(|p| p.name == name).cloned()
+        self.0
+            .borrow()
+            .presets
+            .iter()
+            .find(|p| p.name == name)
+            .cloned()
     }
 
     fn update_presets<F>(&self, f: F) -> Result<(), AppError>
     where
-    F: FnOnce(&mut Vec<presets::Preset>),
+        F: FnOnce(&mut Vec<presets::Preset>),
     {
         {
             let mut inner = self.0.borrow_mut();
@@ -96,7 +97,9 @@ impl AppState {
             let preset = inner.presets.iter().find(|p| p.name == name);
             match preset {
                 None => return Err(AppError::Other("Preset not found.".into())),
-                Some(p) if !p.user_defined => return Err(AppError::Other("Cannot delete built-in preset.".into())),
+                Some(p) if !p.user_defined => {
+                    return Err(AppError::Other("Cannot delete built-in preset.".into()))
+                }
                 _ => {}
             }
         }

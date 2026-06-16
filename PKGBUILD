@@ -2,7 +2,7 @@
 pkgname=badwire
 pkgver=1.0.0
 pkgrel=1
-pkgdesc="BadWire - network impairment tool using tc-netem"
+pkgdesc="BadWire is a simple GUI for simulating network problems with tc-netem"
 arch=('x86_64')
 url="https://github.com/mrak77/badwire"
 license=('GPL-3.0')
@@ -10,7 +10,7 @@ options=(!debug)
 depends=('gtk3' 'iproute2' 'polkit')
 makedepends=('cargo')
 source=("$pkgname-$pkgver.tar.gz::https://github.com/mrak77/badwire/archive/refs/tags/v$pkgver.tar.gz")
-sha256sums=('af12e54a1ea1910f2b8a4e907731aefa8c88e72b8f4e3701dc3e1c81c5f2757a')
+sha256sums=('438c7d09be8f0e0959a364e6c1bed960c3c38a25d71586d8aeb174d4ff2ba3a3')
 
 build() {
     cd "$srcdir/$pkgname-$pkgver"

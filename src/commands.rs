@@ -1,13 +1,9 @@
-use crate::tc;
-use crate::state::AppState;
-use crate::parameter_entries::ParsedParams;
 use crate::error::AppError;
+use crate::parameter_entries::ParsedParams;
+use crate::state::AppState;
+use crate::tc;
 
-pub fn start_netem(
-    state: &AppState,
-    iface: &str,
-    params: &ParsedParams,
-) -> Result<(), AppError> {
+pub fn start_netem(state: &AppState, net_interface: &str, params: &ParsedParams) -> Result<(), AppError> {
     let args = tc::build_netem_args(
         &params.delay,
         params.jitter.as_deref(),
@@ -25,7 +21,7 @@ pub fn start_netem(
         "qdisc".to_string(),
         "replace".to_string(),
         "dev".to_string(),
-        iface.to_string(),
+        net_interface.to_string(),
         "root".to_string(),
         "netem".to_string(),
     ];
@@ -34,15 +30,13 @@ pub fn start_netem(
     let slice: Vec<&str> = full_args.iter().map(|s| s.as_str()).collect();
     tc::run_tc(&slice)?;
 
-    // Обновляем состояние через безопасные методы
     state.set_active(true);
-    state.set_selected_iface(iface);
+    state.set_selected_iface(net_interface);
     state.set_current_config(&params.describe());
     Ok(())
 }
 
 pub fn stop_netem(state: &AppState, iface: &str) -> Result<(), AppError> {
-    // Полный сброс: qdisc replace dev <iface> root netem без аргументов
     let args = ["qdisc", "replace", "dev", iface, "root", "netem"];
     tc::run_tc(&args)?;
 

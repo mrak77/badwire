@@ -1,11 +1,11 @@
-mod ui;
-mod presets;
-mod tc;
-mod state;
 mod commands;
+mod error;
 mod helpers;
 mod parameter_entries;
-mod error;
+mod presets;
+mod state;
+mod tc;
+mod ui;
 
 use gtk::prelude::*;
 use state::AppState;
@@ -19,7 +19,7 @@ fn main() {
 
     let app = gtk::Application::new(
         Some("org.mrak77.badwire"),
-                                    gio::ApplicationFlags::empty(),
+        gtk::gio::ApplicationFlags::empty(),
     );
 
     let state = AppState::new();

@@ -1,6 +1,6 @@
 [Desktop Entry]
 Name=BadWire
-Comment=Network Emulator for Debugging
+Comment=BadWire is a simple GUI for simulating network problems with tc-netem
 Exec=badwire
 Icon=badwire
 Terminal=false

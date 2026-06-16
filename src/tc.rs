@@ -1,5 +1,8 @@
 use std::process::Command;
 use thiserror::Error;
+
+const HELPER_PATH: &str = "/usr/lib/badwire/badwire-tc-helper";
+
 #[derive(Error, Debug)]
 pub enum TcError {
     #[error("Failed to execute tc: {0}")]
@@ -21,9 +24,9 @@ pub fn run_tc(args: &[&str]) -> Result<String, TcError> {
 
 fn run_tc_direct(args: &[&str]) -> Result<String, TcError> {
     let output = Command::new("tc")
-    .args(args)
-    .output()
-    .map_err(TcError::Io)?;
+        .args(args)
+        .output()
+        .map_err(TcError::Io)?;
 
     if output.status.success() {
         Ok(String::from_utf8_lossy(&output.stdout).trim().to_string())
@@ -36,7 +39,7 @@ fn run_tc_direct(args: &[&str]) -> Result<String, TcError> {
 
 fn run_tc_via_pkexec(args: &[&str]) -> Result<String, TcError> {
     let mut cmd = Command::new("pkexec");
-    cmd.arg("/usr/lib/badwire/badwire-tc-helper");   // вместо "tc"
+    cmd.arg(HELPER_PATH);
     for arg in args {
         cmd.arg(arg);
     }
@@ -66,6 +69,10 @@ pub fn is_valid_nonneg_number(s: &str) -> bool {
 }
 
 pub fn is_valid_percentage(s: &str) -> bool {
+    let s = s.trim();
+    if s.is_empty() {
+        return false;
+    }
     s.parse::<f64>().map_or(false, |v| (0.0..=100.0).contains(&v))
 }
 
@@ -83,7 +90,6 @@ pub fn build_netem_args(
 ) -> Result<Vec<String>, String> {
     let mut args: Vec<String> = Vec::new();
 
-    // Задержка и джиттер
     if delay.trim().is_empty() {
         return Err("Delay must not be empty".into());
     }
@@ -100,9 +106,8 @@ pub fn build_netem_args(
         args.push(format!("{}ms", j));
     }
 
-    // Процентные параметры
     if let Some(l) = loss {
-        add_percent_param(&mut args, "loss", l, loss_corr, true)?;   // insert_random = true
+        add_percent_param(&mut args, "loss", l, loss_corr, true)?;
     }
     if let Some(r) = reorder {
         add_percent_param(&mut args, "reorder", r, reorder_corr, false)?;
@@ -117,12 +122,6 @@ pub fn build_netem_args(
     Ok(args)
 }
 
-/// Добавляет в `args` процентный параметр с опциональной корреляцией.
-///
-/// * `name` — имя параметра (например, "loss", "reorder", ...)
-/// * `value` — основное значение в процентах (0-100)
-/// * `correlation` — опциональное значение корреляции (0-100)
-/// * `insert_random` — если `true`, после имени вставляется "random" (нужно для loss)
 fn add_percent_param(
     args: &mut Vec<String>,
     name: &str,
@@ -130,7 +129,6 @@ fn add_percent_param(
     correlation: Option<&str>,
     insert_random: bool,
 ) -> Result<(), String> {
-    // Проверяем основное значение
     if !is_valid_percentage(value) {
         return Err(format!("Invalid {}: {} (must be 0-100)", name, value));
     }
@@ -141,12 +139,11 @@ fn add_percent_param(
     }
     args.push(value.to_string());
 
-    // Если задана корреляция, проверяем и добавляем
     if let Some(corr) = correlation {
         if !is_valid_percentage(corr) {
             return Err(format!(
                 "Invalid {} correlation: {} (must be 0-100)",
-                               name, corr
+                name, corr
             ));
         }
         args.push(corr.to_string());
@@ -181,17 +178,24 @@ mod tests {
 
     #[test]
     fn test_build_netem_args_delay_only() {
-        let args = build_netem_args(
-            "100", None, None, None, None, None, None, None, None, None,
-        )
-        .unwrap();
+        let args =
+            build_netem_args("100", None, None, None, None, None, None, None, None, None).unwrap();
         assert_eq!(args, vec!["delay", "100ms"]);
     }
 
     #[test]
     fn test_build_netem_args_delay_with_jitter() {
         let args = build_netem_args(
-            "200", Some("50"), None, None, None, None, None, None, None, None,
+            "200",
+            Some("50"),
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
         )
         .unwrap();
         assert_eq!(args, vec!["delay", "200ms", "50ms"]);
@@ -200,13 +204,19 @@ mod tests {
     #[test]
     fn test_build_netem_args_loss_only() {
         let args = build_netem_args(
-            "0", None, Some("10"), Some("20"), None, None, None, None, None, None,
+            "0",
+            None,
+            Some("10"),
+            Some("20"),
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
         )
         .unwrap();
-        assert_eq!(
-            args,
-            vec!["delay", "0ms", "loss", "random", "10", "20"]
-        );
+        assert_eq!(args, vec!["delay", "0ms", "loss", "random", "10", "20"]);
     }
 
     #[test]
@@ -214,41 +224,59 @@ mod tests {
         let args = build_netem_args(
             "150",
             Some("30"),
-                                    Some("5"),
-                                    Some("25"),
-                                    Some("2"),
-                                    Some("50"),
-                                    Some("1"),
-                                    Some("75"),
-                                    Some("3"),
-                                    Some("80"),
+            Some("5"),
+            Some("25"),
+            Some("2"),
+            Some("50"),
+            Some("1"),
+            Some("75"),
+            Some("3"),
+            Some("80"),
         )
         .unwrap();
         assert_eq!(
             args,
             vec![
-                "delay", "150ms", "30ms",
-                "loss", "random", "5", "25",
-                "reorder", "2", "50",
-                "corrupt", "1", "75",
-                "duplicate", "3", "80",
+                "delay",
+                "150ms",
+                "30ms",
+                "loss",
+                "random",
+                "5",
+                "25",
+                "reorder",
+                "2",
+                "50",
+                "corrupt",
+                "1",
+                "75",
+                "duplicate",
+                "3",
+                "80",
             ]
         );
     }
 
     #[test]
     fn test_build_netem_args_invalid_delay() {
-        let err = build_netem_args(
-            "", None, None, None, None, None, None, None, None, None,
-        )
-        .unwrap_err();
+        let err =
+            build_netem_args("", None, None, None, None, None, None, None, None, None).unwrap_err();
         assert!(err.contains("Delay must not be empty"));
     }
 
     #[test]
     fn test_build_netem_args_invalid_jitter() {
         let err = build_netem_args(
-            "10", Some("abc"), None, None, None, None, None, None, None, None,
+            "10",
+            Some("abc"),
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
         )
         .unwrap_err();
         assert!(err.contains("Invalid jitter"));
@@ -257,7 +285,16 @@ mod tests {
     #[test]
     fn test_build_netem_args_invalid_loss() {
         let err = build_netem_args(
-            "10", None, Some("notanumber"), None, None, None, None, None, None, None,
+            "10",
+            None,
+            Some("notanumber"),
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
         )
         .unwrap_err();
         assert!(err.contains("Invalid loss"));
@@ -266,7 +303,16 @@ mod tests {
     #[test]
     fn test_build_netem_args_percentage_out_of_range() {
         let err = build_netem_args(
-            "10", None, Some("150"), None, None, None, None, None, None, None,
+            "10",
+            None,
+            Some("150"),
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
+            None,
         )
         .unwrap_err();
         assert!(err.contains("Invalid loss") && err.contains("0-100"));
