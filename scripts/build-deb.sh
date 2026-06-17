@@ -7,7 +7,7 @@ PROJECT_DIR="$(dirname "$SCRIPT_DIR")"
 
 APP_NAME="BadWire"
 BIN_NAME="badwire"
-VERSION="1.0.0"
+VERSION="1.0.1"
 BUILD_DIR="$PROJECT_DIR/target/release"
 DIST_DIR="$PROJECT_DIR/builds"
 DEB_DIR="${BIN_NAME}_${VERSION}_amd64"

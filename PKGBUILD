@@ -1,6 +1,6 @@
 # Maintainer: mrak77 <pb.mrak@yandex.ru>
 pkgname=badwire
-pkgver=1.0.0
+pkgver=1.0.1
 pkgrel=1
 pkgdesc="BadWire is a simple GUI for simulating network problems with tc-netem"
 arch=('x86_64')

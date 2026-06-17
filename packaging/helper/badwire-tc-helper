@@ -3,6 +3,19 @@ set -euo pipefail
 
 PATTERN='^[a-zA-Z0-9._%-]+$'
 
+TC_CMD=""
+for candidate in /usr/sbin/tc /sbin/tc /usr/bin/tc /bin/tc; do
+    if [ -x "$candidate" ]; then
+        TC_CMD="$candidate"
+        break
+    fi
+done
+
+if [ -z "$TC_CMD" ]; then
+    echo "tc not found. Please install iproute2." >&2
+    exit 1
+fi
+
 for arg in "$@"; do
     if [[ ! "$arg" =~ $PATTERN ]]; then
         echo "Rejected invalid argument: $arg" >&2
@@ -10,4 +23,4 @@ for arg in "$@"; do
     fi
 done
 
-exec /usr/bin/tc "$@"
+exec "$TC_CMD" "$@"

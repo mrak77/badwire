@@ -7,7 +7,7 @@ cd "$PROJECT_DIR"
 
 APP_NAME="BadWire"
 BIN_NAME="badwire"
-VERSION="1.0.0"
+VERSION="1.0.1"
 DIST_DIR="builds"
 DEB_FILE="${BIN_NAME}_${VERSION}_amd64.deb"
 ARCHIVE_FILE="${BIN_NAME}-${VERSION}.tar.gz"

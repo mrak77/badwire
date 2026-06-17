@@ -30,7 +30,6 @@ BadWire is a **simple GUI for simulating network problems** with `tc-netem`.
 Download the latest .deb from Releases and run:
 ~~~ bash
 sudo dpkg -i badwire_1.0.0_amd64.deb
-sudo apt install -f
 ~~~
 
 ### Arch
@@ -47,7 +46,7 @@ cd badwire
 cargo build --release
 sudo ./target/release/BadWire
 ~~~
-You can build everything (.tar.gz, .deb, and update PKGBUILD) with:
+You can build everything (.tar.gz, .deb, and update PKGBUILD) with script: scripts/build-all.sh
 
 ## AI Disclosure
 This project used AI-assisted development.
